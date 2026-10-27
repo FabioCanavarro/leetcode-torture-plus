@@ -1,7 +1,7 @@
 import "styles.css"
 
 import SettingDrawer from "components/SettingDrawer"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -12,124 +12,246 @@ import SettingsIcon from "~components/SettingsIcon"
 import {
   generateRandomLeetCodeProblem,
   handleAdditionalProblemRedirect,
+  handleRedirectRule,
   updateProblemState
 } from "./background"
 
 const IndexPopup = () => {
   const unSolvedMessages = [
-    "Another day, another LeetCode problem, so go solve it buddy",
-    "One LeetCode problem a day keeps the unemployment away",
-    "Welcome to your daily dose of LeetCode",
-    "Never back down, Never what"
+    "One LeetCode problem a day keeps unemployment away.",
+    "Your future tech lead is watching. Prove your algorithmic worth.",
+    "Another day, another trial. Put your recursion to work.",
+    "Brute force won't save you today. Optimize or perish.",
+    "Your keyboard is waiting. Time to conquer the daily trial.",
+    "Never back down, never what? Never stop solving."
   ]
+
   const solvedMessages = [
-    "Bro you only solved one problem, chill out",
-    "You survived another day of LeetCode, congrats",
-    "You're one step closer to getting that job, keep it up",
-    "The LeetCode Torture gods are pleased. Rest, for tomorrow brings a new challenge",
-    "Solved your problem for the day, nice, go treat yourself"
+    "The LeetCode Torture gods are pleased. Freedom is granted.",
+    "One problem down! You've cheated unemployment for another 24 hours.",
+    "Accepted on the first try? We'll pretend you didn't check solutions.",
+    "Today's trial is conquered. Rest now, tomorrow brings another beast.",
+    "Clean code, optimal complexity. You survived another day."
   ]
+
   const hyperTortureMessages = [
-    "Your code is compiling... just kidding, prepare for eternal agony.",
-    "Infinite loop of despair activated.",
-    "Feel the burn(out), keep those functions running.",
-    "Error 404: Social life not found. Keep coding.",
-    "Another day, another dollar... subtracted from your sanity budget.",
-    "Commit to the code grind, the keyboard is your only friend."
+    "Infinite recursion into misery. Keep those functions running.",
+    "Tab closed? Another problem spawned. Resistance is futile.",
+    "Error 404: Social life deleted. Compiling eternal algorithms.",
+    "Commit to the grind, your compiler is your only confidant."
   ]
+
   const [unsolvedMessage, setUnsolvedMessage] = useState("")
   const [solvedMessage, setSolvedMessage] = useState("")
   const [hyperTortureMessage, setHyperTortureMessage] = useState("")
+  const [isRerolling, setIsRerolling] = useState(false)
+
   const [problemName] = useStorage<string>("problemName")
   const [problemURL] = useStorage<string>("problemURL")
-  const [leetcodeProblemSolved] = useStorage<boolean>("leetCodeProblemSolved")
-  const [hyperTortureMode] = useStorage<boolean>("hyperTortureMode")
-  const [currentStreak] = useStorage<number>("currentStreak")
-  const [bestStreak] = useStorage<number>("bestStreak")
-  const [HT_currentStreak] = useStorage<number>("HT_currentStreak")
-  const [HT_bestStreak] = useStorage<number>("HT_bestStreak")
+  const [problemDifficulty] = useStorage<string>("problemDifficulty", "Medium")
+  const [problemCategory] = useStorage<string>("problemCategory", "General")
+  const [originalDestinationUrl] = useStorage<string>("originalDestinationUrl")
+  const [leetcodeProblemSolved] = useStorage<boolean>("leetCodeProblemSolved", false)
+  const [hyperTortureMode] = useStorage<boolean>("hyperTortureMode", false)
+  const [disabled, setDisabled] = useStorage<boolean>("disabled", false)
+  const [currentStreak] = useStorage<number>("currentStreak", 0)
+  const [bestStreak] = useStorage<number>("bestStreak", 0)
+  const [HT_currentStreak] = useStorage<number>("HT_currentStreak", 0)
+  const [HT_bestStreak] = useStorage<number>("HT_bestStreak", 0)
   const [permissionsEnabled] = useStorage<boolean>("permissionsEnabled", true)
   const [drawerClosed, setDrawerClosed] = useState(true)
 
   const getRandomInt = (max: number) => Math.floor(Math.random() * max)
 
-  const solveAnother = async () => {
-    const problem = await generateRandomLeetCodeProblem()
-    await updateProblemState(problem)
-    await handleAdditionalProblemRedirect(problem.url)
+  const rerollProblem = async () => {
+    try {
+      setIsRerolling(true)
+      const problem = await generateRandomLeetCodeProblem()
+      if (problem) {
+        await updateProblemState(problem)
+        await handleAdditionalProblemRedirect(problem.url)
+      }
+    } finally {
+      setTimeout(() => setIsRerolling(false), 300)
+    }
+  }
+
+  const toggleEmergencyPause = async () => {
+    const nextState = !disabled
+    setDisabled(nextState)
+    setTimeout(() => handleRedirectRule(), 50)
   }
 
   useEffect(() => {
-    const unsolvedIndex = getRandomInt(unSolvedMessages.length)
-    const hyperTortureIndex = getRandomInt(hyperTortureMessages.length)
-    const randomSolvedIndex = getRandomInt(solvedMessages.length)
-
-    setSolvedMessage(solvedMessages[randomSolvedIndex])
-    setHyperTortureMessage(hyperTortureMessages[hyperTortureIndex])
-    setUnsolvedMessage(unSolvedMessages[unsolvedIndex])
+    setSolvedMessage(solvedMessages[getRandomInt(solvedMessages.length)])
+    setHyperTortureMessage(hyperTortureMessages[getRandomInt(hyperTortureMessages.length)])
+    setUnsolvedMessage(unSolvedMessages[getRandomInt(unSolvedMessages.length)])
   }, [])
 
   if (!permissionsEnabled) {
     return <NoPermissions permissionsEnabled={permissionsEnabled} />
   }
 
+  const diffClass =
+    problemDifficulty?.toLowerCase() === "easy"
+      ? "diff-easy"
+      : problemDifficulty?.toLowerCase() === "hard"
+      ? "diff-hard"
+      : "diff-medium"
+
+  // Status pill logic
+  let statusText = "ACTIVE TORTURE 🔒"
+  let statusClass = "status-active"
+  if (disabled) {
+    statusText = "TORTURE PAUSED ⏸️"
+    statusClass = "status-paused"
+  } else if (hyperTortureMode) {
+    statusText = "HYPER TORTURE ⚡"
+    statusClass = "status-hyper"
+  } else if (leetcodeProblemSolved) {
+    statusText = "CONQUERED 🎉"
+    statusClass = "status-solved"
+  }
+
   return (
     <div className="popup">
-      <nav>
-        <h1 className="flex">Welcome to the LeetCode Gulag</h1>
-        <button onClick={() => setDrawerClosed(!drawerClosed)}>
-          <SettingsIcon />
-        </button>
-      </nav>
-
-      {!problemName && (
-        <div className="loading">
-          <p>Fetching torture problem...</p>
-          <span className="loader"></span>
-        </div>
-      )}
-
-      {hyperTortureMode && (
-        <HyperTortureMode
-          message={hyperTortureMessage}
-          problemName={problemName}
-        />
-      )}
-
-      {!leetcodeProblemSolved && !hyperTortureMode && (
-        <>
-          <h2 id="unsolved-message">{unsolvedMessage}</h2>
-
-          <div className="leetcode-info">
-            <p className="question-of-day-msg">Today's Question</p>
-            <p id="leetcode-problem-name">{problemName}</p>
-            <button
-              id="leetcode-problem-button"
-              onClick={() => chrome.tabs.create({ url: problemURL })}>
-              Solve it
-            </button>
+      {/* Top Navigation */}
+      <nav className="top-nav">
+        <div className="brand-group">
+          <div className="brand-logo">⚔️</div>
+          <div className="brand-titles">
+            <h1 className="brand-name">LeetCode Torture</h1>
+            <span className="brand-tag">ENCHANTED</span>
           </div>
-        </>
-      )}
-      {leetcodeProblemSolved && (
-        <div className="solved-section">
-          <h2 id="solved-message">{solvedMessage}</h2>
-          <button id="leetcode-problem-button" onClick={() => solveAnother()}>
-            Solve another
+        </div>
+
+        <div className="nav-actions">
+          <button
+            className={`icon-button pause-toggle-btn ${disabled ? "is-paused" : ""}`}
+            title={disabled ? "Resume Torture Redirects" : "Emergency Pause"}
+            onClick={toggleEmergencyPause}>
+            {disabled ? "▶️" : "⏸️"}
+          </button>
+          <button
+            className="icon-button settings-btn"
+            title="Settings & Problem Sets"
+            onClick={() => setDrawerClosed(false)}>
+            <SettingsIcon />
           </button>
         </div>
-      )}
-      <div className="streak-section">
-        <div className="current-streak">
-          <h2 id="current-streak-message">Current Streak: </h2>
-          <p>{hyperTortureMode ? HT_currentStreak ?? 0 : currentStreak ?? 0}</p>
+      </nav>
+
+      {/* Main Container */}
+      <div className="popup-body">
+        {/* Status & Streak Row */}
+        <div className="status-row">
+          <div className={`status-pill ${statusClass}`}>{statusText}</div>
+
+          <div className="streaks-group">
+            <div className="streak-badge current-streak-pill" title="Current Solving Streak">
+              <span className="flame-icon">🔥</span>
+              <span className="streak-num">
+                {hyperTortureMode ? HT_currentStreak ?? 0 : currentStreak ?? 0}
+              </span>
+            </div>
+            <div className="streak-badge best-streak-pill" title="Best Solving Streak">
+              <span className="trophy-icon">🏆</span>
+              <span className="streak-num">
+                {hyperTortureMode ? HT_bestStreak ?? 0 : bestStreak ?? 0}
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="current-streak">
-          <h2 id="best-streak-message">Best Streak: </h2>
-          <p>{hyperTortureMode ? HT_bestStreak ?? 0 : bestStreak ?? 0}</p>
+
+        {/* Loading Indicator */}
+        {!problemName && (
+          <div className="loading-card">
+            <span className="spinner"></span>
+            <p>Summoning your algorithmic trial...</p>
+          </div>
+        )}
+
+        {/* Hyper Torture Mode View */}
+        {problemName && hyperTortureMode && (
+          <HyperTortureMode
+            message={hyperTortureMessage}
+            problemName={problemName}
+            problemURL={problemURL}
+            problemDifficulty={problemDifficulty}
+            problemCategory={problemCategory}
+          />
+        )}
+
+        {/* Standard Unsolved View */}
+        {problemName && !leetcodeProblemSolved && !hyperTortureMode && (
+          <div className="problem-card">
+            <p className="roast-subtitle">{unsolvedMessage}</p>
+
+            <div className="spotlight-box">
+              <div className="problem-meta-row">
+                <span className={`diff-pill ${diffClass}`}>{problemDifficulty}</span>
+                <span className="category-pill">{problemCategory}</span>
+              </div>
+
+              <h2 className="problem-headline">{problemName}</h2>
+
+              <div className="action-buttons-row">
+                <button
+                  className="primary-action-btn"
+                  onClick={() => {
+                    if (problemURL) chrome.tabs.create({ url: problemURL })
+                  }}>
+                  <span>⚔️</span> Solve Trial
+                </button>
+                <button
+                  className={`secondary-action-btn ${isRerolling ? "spinning" : ""}`}
+                  title="Roll a different problem from your set"
+                  onClick={rerollProblem}>
+                  <span>🎲</span> Reroll
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Solved View */}
+        {problemName && leetcodeProblemSolved && !hyperTortureMode && (
+          <div className="solved-card">
+            <div className="solved-badge">✨</div>
+            <h2 className="solved-heading">Freedom Earned!</h2>
+            <p className="solved-msg">{solvedMessage}</p>
+
+            <div className="solved-actions">
+              <button
+                className="primary-action-btn"
+                onClick={rerollProblem}>
+                <span>🚀</span> Solve Another Problem
+              </button>
+
+              {originalDestinationUrl && (
+                <button
+                  className="secondary-action-btn return-orig-btn"
+                  onClick={() => {
+                    chrome.tabs.create({ url: originalDestinationUrl })
+                  }}>
+                  <span>🔗</span> Jump to Original Page
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Emergency Control Footer */}
+        <div className="footer-bar">
+          <button
+            className={`footer-pause-btn ${disabled ? "resume-mode" : ""}`}
+            onClick={toggleEmergencyPause}>
+            {disabled ? "▶️ Resume Torture (Enforce Redirects)" : "⏸️ Quick Emergency Pause"}
+          </button>
         </div>
       </div>
 
+      {/* Settings Drawer */}
       <SettingDrawer close={drawerClosed} setClose={setDrawerClosed} />
     </div>
   )

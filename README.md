@@ -1,67 +1,91 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# ⚔️ LeetCode Torture Plus (Enchanted Edition)
 
-# [LeetCode Torture](https://chromewebstore.google.com/detail/leetcode-torture/clbhgfneekiimoaakhhdjimgnnbnfbeh)
+An enchanted, production-grade browser extension that forces you into solving LeetCode problems before letting you access distracting websites. 
 
-![LeetCode Torture Logo](https://raw.githubusercontent.com/The-CodingSloth/haha-funny-leetcode-extension/main/assets/icon.png)
+Forked and modernized from `The-CodingSloth/haha-funny-leetcode-extension` with fixes from all community pull requests, full compatibility with LeetCode's modern dynamic UI update, and a stunning dark cyber-glassmorphism interface.
 
-LeetCode Torture is an extension designed to make you productive to ace those technical interviews. When you activate this extension, you won't be able to access any websites except LeetCode until you solve your randomly assigned LeetCode problem. [Here's the video on YouTube.](https://youtu.be/e4ReFOWMG9o?si=CJ2EdqVPFPdcc7GN)
+---
 
-## Features
+## ⚡ What's New & Fixed in This Edition
 
-- Random Problem Assignment: Get a random LeetCode problem every day
-- Website Blocker: Prevents you from accessing any websites until you solve your problem
+### 🛠️ 1. Modern LeetCode Submission Engine
+- **Robust URL Slug Matching**: Handles modern LeetCode subroutes (`/description/`, `/submissions/`, `?envType=...`, query parameters).
+- **Multi-Layered Submission Detection**:
+  - Global network interception on submission check REST endpoints (`/submissions/detail/*/check/`).
+  - Keyboard submission shortcut capture (`Ctrl + Enter` / `Cmd + Enter`).
+  - Modern DOM locators: `button[data-e2e-locator="console-submit-button"]`, `button[data-cy="submit-code-btn"]`, and fallback DOM mutation observer.
+- **Tab-Independent Check**: Verifies submission by request `tabId`, so switching away from the tab while the judge runs never drops your accepted solution.
+- **Reload Protection**: Reloading or restarting the browser does not wipe an active in-progress or already-solved daily problem.
 
-## Local Installation for Testing and Development
+### 📚 2. Expanded Problem Sets & Filtering
+- **AlgoMap Roadmap Set**: Added 100 free curated problems from [algomap.io/roadmap](https://algomap.io) spanning 11 core DSA topics.
+- **DSA Category Filter**: Filter problems by specific topic (Arrays & Hashing, Two Pointers, Sliding Window, Trees, Graphs, Dynamic Programming, and more) across all problem sets.
+- **Safe Problem Generation**: Out-of-bounds index safeguards and multi-level fallbacks ensure problems always load smoothly even with narrow filter criteria.
 
-### Setting up:
+### ⏸️ 3. Emergency Pause ("Stop the Madness")
+- Need to take a quick meeting or check docs? One-click **Emergency Pause** toggle directly in the popup and settings drawer temporarily lifts redirects without clearing your streaks.
 
-- Have Node.js Installed on your machine
-- Clone or download the repo
-- Navigate to the root directory
-- Install pnpm if you don't have it (it's recommended to use it from plasmo)
-- Run `pnpm install` to install the required dependencies
+### 🚀 4. Destination URL Restoration
+- Intercepted on your way to an important webpage? The extension remembers the exact URL you were navigating to and offers a **"Continue to [page]"** button upon solving the trial.
 
-### Building the Extension to run locally on Chrome:
+### ⚡ 5. Hyper Torture Mode Fixed
+- In Hyper Torture mode, completing a problem now generates a brand-new random challenge instead of looping the same solved problem. Tracks both current and all-time best Hyper streaks.
 
-- In the terminal run the command `pnpm dev` or `npm run dev`
-- Open Chrome and open up your extensions page
-- Enable Developer Mode using the toggle at the top right of the page
-- Click on the Load unpacked button on the top left of the page
-- Locate and select the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
-- The extension should now be installed have fun
-- You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes.
+### 🎨 6. Enchanted Cyber-Dark Glassmorphism UI
+- Deep obsidian background with gradient mesh and frosted glass panels.
+- Glowing streak tracker with flame and trophy badges.
+- Difficulty pills (Emerald Easy, Amber Medium, Crimson Hard).
+- Sleek modern toggle switches and styled dropdown controls.
+- Beautiful, witty celebratory completion modal with confetti and custom language roasts.
 
-### For Firefox development
+---
 
-- Make sure your Firefox is on version 109 (we're using manifest v3)
-- In the terminal run the command `pnpm dev --target=firefox-mv3` or `npm run dev-firefox`
-- In the build folder you should now see `build/firefox-mv3-dev`
-- In Firefox type about:debugging in the URL.
-- Go to "This Firefox"
-- In Temporary Extensions click "Load Temporary Add-on"
-- Select any file from your folder
+## 🚀 Getting Started
 
-#### To get the extension working properly right now on Firefox
+### Prerequisites
+- Node.js (v18+)
+- [pnpm](https://pnpm.io/) (`npm install -g pnpm`)
 
-- Go to leetcode.com and right click the extension, and give the extension permission
-- Do the same for any websites you visit (Firefox, doesn't give permissions automatically like chrome which is why we have to do this, it's annoying)
+### Installation & Development
+```bash
+# Clone the repository
+git clone https://github.com/FabioCanavarro/leetcode-torture.git
+cd leetcode-torture
 
-## FAQ
+# Install dependencies
+pnpm install
 
-### Why did you make this?
+# Run in Chrome dev mode
+pnpm dev
 
-Just for fun
+# Or build production Chrome bundle (Manifest V3)
+pnpm build
 
-### Do I need to be a senior 10x developer to help and contribute?
+# Or build for Firefox (Manifest V3)
+pnpm build-firefox
+```
 
-Nope, anybody can contribute to this torture machine, skill level does not matter. I made this project with no knowledge about making extensions
+### Loading in Google Chrome / Chromium
+1. Open Chrome and navigate to `chrome://extensions`.
+2. Toggle on **Developer mode** in the top-right corner.
+3. Click **Load unpacked** and select `build/chrome-mv3-dev` (or `build/chrome-mv3-prod`).
+4. Pin the extension and start your algorithmic trial!
 
-### How do I help and improve LeetCode Torture?
+### Loading in Firefox
+1. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on...**
+3. Select any file inside `build/firefox-mv3-dev` (or `build/firefox-mv3-prod/manifest.json`).
 
-Read our [CONTRIBUTING.md file](https://github.com/The-CodingSloth/haha-funny-leetcode-extension/blob/main/CONTRIBUTING.md) to learn how to help make this extension more painful for everyone
+---
 
-### I don't even know where to start
+## 🧪 Testing
 
-That's perfectly fine, take some time and read the code to understand what's going on. You don't have to make super big changes, they can be as small as fixing my dumb typos on these files or adding helpful comments to the code.
+```bash
+# Run unit tests (URL slug matching & problem set invariants)
+pnpm test
+```
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+---
+
+## 📄 License
+MIT License.

@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react"
 import FailImage from "~components/FailImage"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://leetcode.com/*"]
+  matches: ["https://leetcode.com/*", "https://leetcode.cn/*"]
 }
-// Have to do this in order to get the css to apply (see the plasmo docs for more info)
+
 export const getStyle = () => {
   const style = document.createElement("style")
   style.textContent = styleText
@@ -18,57 +18,50 @@ const FailedModal = () => {
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
-    const handleClick = (event: any) => {
-      let currentTarget = event.target
-      while (currentTarget) {
-        if (
-          currentTarget.matches(
-            'button[data-e2e-locator="console-submit-button"]'
-          )
-        ) {
-          chrome.runtime.sendMessage({ action: "userClickedSubmit" })
-        }
-        // We hit a child element, so we go up the DOM until we're at the button
-        currentTarget = currentTarget.parentElement
-      }
-    }
-    const handleMessage = (message: any, sender: any, sendResponse: any) => {
-      if (message.action === "userFailedProblem") {
+    const handleMessage = (message: any) => {
+      if (message?.action === "userFailedProblem") {
         setShowModal(true)
       }
     }
 
-    // Listen for user interaction, e.g., when they click "Submit".
-    document.addEventListener("click", handleClick)
-
-    // Listen for messages from the background script or other parts of the extension.
-    chrome.runtime.onMessage.addListener(handleMessage)
-
-    // Cleanup on component unmount
-    return () => {
-      document.removeEventListener("click", handleClick)
-      chrome.runtime.onMessage.removeListener(handleMessage)
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showModal) {
+        setShowModal(false)
+      }
     }
-  }, [])
+
+    chrome.runtime.onMessage.addListener(handleMessage)
+    document.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage)
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [showModal])
+
+  if (!showModal) return null
 
   return (
-    showModal && (
-      <div className="modal-background">
-        <div className="modal-content">
-          <h1>Congratulations! You've made a mistake!</h1>
+    <div className="modal-background fail-modal" onClick={() => setShowModal(false)}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-icon-badge">💀</div>
+        <h1>Fatal Mistake!</h1>
+        <p className="modal-roast">Hyper Torture streak reset to 0. The grind never forgives.</p>
 
-          <div className="fail-image">
-            <FailImage />
-          </div>
-          <h3>The Hyper Torture streak has been reset to zero.</h3>
+        <div style={{ margin: "1rem 0", maxWidth: "200px" }}>
+          <FailImage />
+        </div>
+
+        <div className="modal-actions">
           <button
-            className="close-modal-button"
+            className="primary-modal-button"
+            style={{ background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)" }}
             onClick={() => setShowModal(false)}>
-            Close
+            Back to Agony
           </button>
         </div>
       </div>
-    )
+    </div>
   )
 }
 

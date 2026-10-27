@@ -3,16 +3,20 @@ type TopicTag = {
   id: string
   slug: string
 }
+
+export type ProblemInfo = {
+  name: string
+  url: string
+  difficulty?: "Easy" | "Medium" | "Hard" | string
+  category?: string
+}
+
 export type UserState = {
   leetcodeProblemSolved: boolean
-  leetCodeProblem: {
-    name: string
-    url: string
-  }
+  leetCodeProblem: ProblemInfo
   lastSubmissionDate: Date
   solvedListenerActive: boolean
   lastAttemptedUrl: string
-
   urlListener: (
     details: chrome.webRequest.WebRequestBodyDetails
   ) => void | chrome.webRequest.BlockingResponse
@@ -24,23 +28,15 @@ export type UserState = {
 export type APILeetCodeProblem = {
   acRate: number
   difficulty: "Easy" | "Medium" | "Hard"
-
   freqBar: number
-
   frontendQuestionId: string
-
   hasSolution: boolean
-
   hasVideoSolution: boolean
-
   isFavor: boolean
-
   paidOnly: boolean
-
   status: string
   title: string
   titleSlug: string
-
   topicTags: TopicTag[]
 }
 

@@ -1,4 +1,5 @@
 import { useStorage } from "@plasmohq/storage/hook"
+import React from "react"
 
 import {
   handleRedirectRule,
@@ -9,90 +10,128 @@ import {
 import BackIcon from "./BackIcon"
 import SettingLabel from "./SettingLabel"
 
-const SettingDrawer = ({ close, setClose }) => {
-  const [problemSets, setProblemSets] = useStorage<string>("problemSets")
-  const [difficulty, setDifficulty] = useStorage<string>("difficulty")
-  const [leetcodeProblemSolved] = useStorage<boolean>("leetCodeProblemSolved")
-  const [includePremium, setIncludePremium] =
-    useStorage<boolean>("includePremium")
-  const [enableRedirect, setEnableRedirect] = useStorage<boolean>(
-    "enableRedirectOnEveryProblem"
-  )
-  const [hyperTortureMode, setHyperTortureMode] =
-    useStorage<boolean>("hyperTortureMode")
-  const [_, setHTcurrentStreak] = useStorage<number>("HT_currentStreak")
+interface SettingDrawerProps {
+  close: boolean
+  setClose: (close: boolean) => void
+}
+
+const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
+  const [problemSets, setProblemSets] = useStorage<string>("problemSets", "all")
+  const [difficulty, setDifficulty] = useStorage<string>("difficulty", "all")
+  const [category, setCategory] = useStorage<string>("category", "all")
+  const [leetcodeProblemSolved] = useStorage<boolean>("leetCodeProblemSolved", false)
+  const [includePremium, setIncludePremium] = useStorage<boolean>("includePremium", false)
+  const [disabled, setDisabled] = useStorage<boolean>("disabled", false)
+  const [hyperTortureMode, setHyperTortureMode] = useStorage<boolean>("hyperTortureMode", false)
+  const [_, setHTcurrentStreak] = useStorage<number>("HT_currentStreak", 0)
+
   const settingList = [
     {
-      name: "Disable the torture",
-      description: "Click to disable/enable redirects",
+      name: "Emergency Pause ⏸️",
+      description: "Temporarily pause redirect rules without losing streaks",
       checkboxProps: {
-        checked: enableRedirect ?? false,
-        handleChange: async (e) => {
-          setEnableRedirect(e.target.checked)
-
-          handleRedirectRule()
+        checked: disabled ?? false,
+        handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+          setDisabled(e.target.checked)
+          // Handle redirect rule updates
+          setTimeout(() => handleRedirectRule(), 50)
         }
       }
     },
     {
-      name: "Problem Sets",
-      description: "Choose the leetcode problems you'd like",
+      name: "Problem Set 📚",
+      description: "Choose your practice curriculum",
       dropdownProps: {
         options: {
-          all: "All Leetcode Problems",
-          allNeetcode: "All Neetcode Problems",
-          NeetCode150: "Neetcode 150",
+          all: "All LeetCode Problems",
+          algomapRoadmap: "AlgoMap Roadmap (100 Free)",
+          NeetCode150: "NeetCode 150",
           Blind75: "Blind 75",
           metaTop100: "Meta Top 100",
+          allNeetcode: "All NeetCode Problems",
           "lg-5htp6xyg": "LeetCode Curated SQL 70",
           "lg-79h8rn6": "Top 100 Liked Questions",
           "lg-wpwgkgt": "Top Interview Questions",
           "lg-o9exaktc": "Tayomide's Questions"
         },
         defaultValue: problemSets,
-        handleChange: async (e) => {
+        handleChange: async (e: React.ChangeEvent<HTMLSelectElement>) => {
           setProblemSets(e.target.value)
-
-          !leetcodeProblemSolved ? await updateStorage() : null
+          if (!leetcodeProblemSolved) {
+            await updateStorage()
+          }
         }
       }
     },
     {
-      name: "Problem Difficulty",
-      description: "Choose the leetcode difficulty you'd like",
+      name: "Problem Difficulty 🎯",
+      description: "Target your challenge level",
       dropdownProps: {
         options: {
-          all: "All difficulties",
-          EASY: "Easy",
-          MEDIUM: "Medium",
-          HARD: "Hard"
+          all: "All Difficulties",
+          EASY: "Easy (Warmup)",
+          MEDIUM: "Medium (Standard)",
+          HARD: "Hard (Nightmare)"
         },
         defaultValue: difficulty,
-        handleChange: async (e) => {
+        handleChange: async (e: React.ChangeEvent<HTMLSelectElement>) => {
           setDifficulty(e.target.value)
-          !leetcodeProblemSolved ? await updateStorage() : null
+          if (!leetcodeProblemSolved) {
+            await updateStorage()
+          }
         }
       }
     },
     {
-      name: "Include Premium Problems",
-      description: "Toggle whether to include premium problems",
+      name: "Problem Category 🏷️",
+      description: "Focus on a specific DSA topic",
+      dropdownProps: {
+        options: {
+          all: "All Topics & Categories",
+          "Arrays & Hashing": "Arrays & Hashing / Strings",
+          "Two Pointers": "Two Pointers",
+          "Sliding Window": "Sliding Window",
+          Stack: "Stack",
+          "Binary Search": "Binary Search",
+          "Linked List": "Linked List",
+          Trees: "Trees & BST",
+          Heap: "Heap / Priority Queue",
+          Backtracking: "Backtracking",
+          Graphs: "Graphs & BFS/DFS",
+          "Dynamic Programming": "Dynamic Programming",
+          Greedy: "Greedy",
+          Intervals: "Intervals",
+          "Math & Geometry": "Math & Geometry",
+          "Bit Manipulation": "Bit Manipulation"
+        },
+        defaultValue: category,
+        handleChange: async (e: React.ChangeEvent<HTMLSelectElement>) => {
+          setCategory(e.target.value)
+          if (!leetcodeProblemSolved) {
+            await updateStorage()
+          }
+        }
+      }
+    },
+    {
+      name: "Include Premium Problems 💎",
+      description: "Allow LeetCode subscription-only problems",
       checkboxProps: {
         checked: includePremium ?? false,
-        handleChange: async (e) => {
+        handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
           setIncludePremium(e.target.checked)
-          !leetcodeProblemSolved ? await updateStorage() : null
+          if (!leetcodeProblemSolved) {
+            await updateStorage()
+          }
         }
       }
     },
-
     {
-      name: 'Enable "Hyper Torture" mode 🤓',
-      description:
-        "Toggle mode that forces you to solve a problem every time you open a new page",
+      name: 'Hyper Torture Mode ⚡',
+      description: "Forces a fresh problem on every new tab opened",
       checkboxProps: {
         checked: hyperTortureMode ?? false,
-        handleChange: async (e) => {
+        handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
           setHTcurrentStreak(0)
           setHyperTortureMode(e.target.checked)
           await updateStorage()
@@ -100,39 +139,42 @@ const SettingDrawer = ({ close, setClose }) => {
         }
       }
     }
-    /* TODO: Add this feature later
-    {
-      name: "Number of problems to solve",
-      description:
-        "Choose the amount of leetcode problems you'd like to solve before being able to access websites",
-      inputProps: {
-        type: "number",
-        handleChange: (e) => {}
-      }
-    }
-    */
   ]
+
   return (
     <div className={["drawer", close ? "" : "opened"].join(" ")}>
-      <nav>
-        <button onClick={() => setClose(!close)}>
+      <nav className="drawer-nav">
+        <button
+          className="back-btn"
+          aria-label="Back to dashboard"
+          onClick={() => setClose(true)}>
           <BackIcon />
         </button>
-        <h1>Settings</h1>
+        <h2>Preferences & Torture Settings</h2>
       </nav>
-      <ul className="setting-labels">
+
+      <div className="drawer-content">
         {leetcodeProblemSolved && !hyperTortureMode && (
-          <p className="settings-problem-solved">
-            Congrats you solved your problem today, these settings will be
-            applied tomorrow
-          </p>
+          <div className="settings-notice">
+            <span>✨</span>
+            <p>
+              Problem solved for today! New settings will apply to tomorrow's trial.
+            </p>
+          </div>
         )}
-        {settingList.map((settingProps, key) => (
-          <li key={key}>
-            <SettingLabel {...settingProps} />
-          </li>
-        ))}
-      </ul>
+
+        <ul className="setting-labels">
+          {settingList.map((settingProps, key) => (
+            <li key={key} className="setting-card">
+              <SettingLabel {...settingProps} />
+            </li>
+          ))}
+        </ul>
+
+        <div className="drawer-footer">
+          <p className="version-tag">LeetCode Torture v1.0.0 • Enhanced Edition</p>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-export const messages = {
+export const messages: Record<string, { language: string; message: string }> = {
   cpp: {
     language: "cpp",
     message:
@@ -10,19 +10,19 @@ export const messages = {
   },
   javascript: {
     language: "javascript",
-    message: "Don't you have to download a library to do that?"
+    message: "Don't you have to download an npm package to do that?"
   },
   rust: {
     language: "rust",
-    message: "Why would you use rust for leetcode?"
+    message: "Why would you use Rust for LeetCode? Did the borrow checker finally let you submit?"
   },
   c: {
     language: "c",
-    message: "You know C++ exists right?"
+    message: "You know C++ exists right? Memory leaks incoming."
   },
   typescript: {
     language: "typescript",
-    message: "Oooh, look at me, my javascript is soo fancy!!"
+    message: "Oooh, look at me, my JavaScript has fancy types!"
   },
   python: {
     language: "python",
@@ -31,12 +31,12 @@ export const messages = {
   },
   python3: {
     language: "python3",
-    message: "Want a scale to measure that indentation?"
+    message: "Want a ruler to measure that indentation?"
   },
   csharp: {
     language: "csharp",
     message:
-      "You know, if you point a million monkeys at a million keyboards, one of them will eventually write a Java program. The rest of them will write C# programs."
+      "You know, if you point a million monkeys at a million keyboards, one of them will write C#."
   },
   ruby: {
     language: "ruby",
@@ -64,10 +64,37 @@ export const messages = {
   },
   kotlin: {
     language: "kotlin",
-    message: "Seriously? Kotlin for leetcode?"
+    message: "Seriously? Kotlin for LeetCode? Just write Android apps."
   },
   php: {
     language: "php",
-    message: "Just stick to web development."
+    message: "Just stick to web development from 2008."
+  },
+  scala: {
+    language: "scala",
+    message: "Functional programming won't save your time complexity."
+  },
+  sql: {
+    language: "sql",
+    message: "SELECT happiness FROM life WHERE solved_leetcode = 1 -- 0 rows returned."
+  },
+  r: {
+    language: "r",
+    message: "Did your statistics professor force you to use R for this?"
   }
+}
+
+export function getRoastMessage(language: string | undefined): string {
+  if (!language) return "Accepted! You survived another LeetCode problem."
+  const langKey = language.toLowerCase().trim()
+  if (messages[langKey]) {
+    return messages[langKey].message
+  }
+  // Try matching partial (e.g. 'python' in 'python3')
+  for (const [key, val] of Object.entries(messages)) {
+    if (langKey.includes(key) || key.includes(langKey)) {
+      return val.message
+    }
+  }
+  return "Accepted! You survived another LeetCode problem."
 }
