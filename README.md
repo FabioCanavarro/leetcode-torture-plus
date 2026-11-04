@@ -1,4 +1,4 @@
-# LeetCode Torture Plus (Enchanted Edition)
+# LeetCode Torture Plus (Vibe coded btw, since I need it fast :))
 
 An enchanted, production-grade browser extension that forces you into solving LeetCode problems before letting you access distracting websites. 
 
