@@ -36,6 +36,8 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
         run: pnpm install --no-frozen-lockfile
 
       - name: Run Test Suite
@@ -83,23 +85,23 @@ jobs:
             build/chrome-mv3-prod.zip
             build/firefox-mv3-prod.zip
           body: |
-            ## ⚔️ LeetCode Torture Plus — Release ${{ steps.vars.outputs.tag }}
+            ## LeetCode Torture Plus - Release ${{ steps.vars.outputs.tag }}
 
-            ### 🚀 New Features & Enhancements
-            - **LeetCode Profile Linking & Solved Question Tracking**:
+            ### New Features & Enhancements
+            - LeetCode Profile Linking & Solved Question Tracking:
               - Connect your LeetCode username or auto-detect with one click from active browser session.
               - Automatically query and sync solved problem history.
-              - **"Exclude Already Solved Problems"**: Never assigns problems you've already completed.
-              - Quick "Already Solved? Mark & Skip" action right on the problem card.
-            - **3-Chance Reroll System & Insanely Hard Penalty**:
+              - Exclude Already Solved Problems: Never assigns problems you have already completed.
+              - Quick Already Solved Mark and Skip action right on the problem card.
+            - 3-Chance Reroll System & Insanely Hard Penalty:
               - 3 reroll chances allowed per session/day.
               - 1st & 2nd rerolls roll a fresh random problem from your curriculum.
               - Warning alert on the 2nd reroll (1 chance remaining).
-              - **3rd Reroll Penalty**: Summons an **INSANELY HARD** problem (Median of Two Sorted Arrays, Trapping Rain Water, Regular Expression Matching, Alien Dictionary, etc.).
+              - 3rd Reroll Penalty: Summons an INSANELY HARD problem (Median of Two Sorted Arrays, Trapping Rain Water, Regular Expression Matching, Alien Dictionary, etc.).
               - Rerolls lock after 3 chances until solved or next daily trial.
-            - **AlgoMap Roadmap Integration**:
+            - AlgoMap Roadmap Integration:
               - 100% free, 100-problem algorithmic mastery curriculum curated by NeetCode & AlgoMap.
-            - **Emergency Pause ⏸️**:
+            - Emergency Pause:
               - Pause redirects at any moment without breaking streaks.
-            - **Cross-Browser Support**:
+            - Cross-Browser Support:
               - Pre-packaged bundles for both Google Chrome (MV3) and Mozilla Firefox (MV3).

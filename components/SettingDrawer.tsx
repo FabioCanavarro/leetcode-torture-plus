@@ -43,8 +43,8 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
 
   const settingList = [
     {
-      name: "Exclude Solved Problems 🚫",
-      description: "Never assign problems you've already completed on LeetCode",
+      name: "Exclude Solved Problems",
+      description: "Never assign problems you have already completed on LeetCode",
       checkboxProps: {
         checked: excludeSolvedProblems ?? true,
         handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Emergency Pause ⏸️",
+      name: "Emergency Pause",
       description: "Temporarily pause redirect rules without losing streaks",
       checkboxProps: {
         checked: disabled ?? false,
@@ -67,7 +67,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Problem Set 📚",
+      name: "Problem Set",
       description: "Choose your practice curriculum",
       dropdownProps: {
         options: {
@@ -92,7 +92,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Problem Difficulty 🎯",
+      name: "Problem Difficulty",
       description: "Target your challenge level",
       dropdownProps: {
         options: {
@@ -111,7 +111,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Problem Category 🏷️",
+      name: "Problem Category",
       description: "Focus on a specific DSA topic",
       dropdownProps: {
         options: {
@@ -142,7 +142,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Include Premium Problems 💎",
+      name: "Include Premium Problems",
       description: "Allow LeetCode subscription-only problems",
       checkboxProps: {
         checked: includePremium ?? false,
@@ -155,7 +155,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: "Hyper Torture Mode ⚡",
+      name: "Hyper Torture Mode",
       description: "Forces a fresh problem on every new tab opened",
       checkboxProps: {
         checked: hyperTortureMode ?? false,
@@ -188,11 +188,10 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
         {/* Reroll Status Card */}
         <div className="reroll-status-box">
           <div className="reroll-status-info">
-            <span className="reroll-icon">🎲</span>
             <div>
               <p className="reroll-label">Daily Reroll Chances</p>
               <p className="reroll-desc">
-                {rerollsUsed ?? 0}/3 used ({Math.max(0, 3 - (rerollsUsed ?? 0))} left) • 3rd reroll penalty forces an insanely hard problem!
+                {rerollsUsed ?? 0}/3 used ({Math.max(0, 3 - (rerollsUsed ?? 0))} left) - 3rd reroll penalty forces an insanely hard problem.
               </p>
             </div>
           </div>
@@ -205,9 +204,8 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
 
         {leetcodeProblemSolved && !hyperTortureMode && (
           <div className="settings-notice">
-            <span>✨</span>
             <p>
-              Problem solved for today! New settings will apply to tomorrow's trial.
+              Problem solved for today. New settings will apply to tomorrow's trial.
             </p>
           </div>
         )}
@@ -221,7 +219,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
         </ul>
 
         <div className="drawer-footer">
-          <p className="version-tag">LeetCode Torture v1.0.0 • Enhanced Edition</p>
+          <p className="version-tag">LeetCode Torture v1.0.0 - Enhanced Edition</p>
         </div>
       </div>
     </div>

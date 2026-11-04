@@ -113,7 +113,7 @@ const CongratulationsModal = () => {
   return (
     <div className="modal-background" onClick={() => setShowModal(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-icon-badge">🏆</div>
+        <div className="modal-icon-badge" style={{ fontSize: "0.85rem", fontWeight: 800 }}>SOLVED</div>
         <h1>Problem Conquered!</h1>
         <p className="modal-roast">{getRoastMessage(language)}</p>
 
@@ -124,7 +124,7 @@ const CongratulationsModal = () => {
               onClick={() => {
                 window.location.href = originalUrl
               }}>
-              <span>🚀</span> Continue to {targetDomain}
+              Continue to {targetDomain}
             </button>
           )}
 

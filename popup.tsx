@@ -149,16 +149,16 @@ const IndexPopup = () => {
     : "diff-medium"
 
   // Status pill logic
-  let statusText = "ACTIVE TORTURE 🔒"
+  let statusText = "ACTIVE TORTURE"
   let statusClass = "status-active"
   if (disabled) {
-    statusText = "TORTURE PAUSED ⏸️"
+    statusText = "TORTURE PAUSED"
     statusClass = "status-paused"
   } else if (hyperTortureMode) {
-    statusText = "HYPER TORTURE ⚡"
+    statusText = "HYPER TORTURE"
     statusClass = "status-hyper"
   } else if (leetcodeProblemSolved) {
-    statusText = "CONQUERED 🎉"
+    statusText = "CONQUERED"
     statusClass = "status-solved"
   }
 
@@ -167,7 +167,7 @@ const IndexPopup = () => {
       {/* Top Navigation */}
       <nav className="top-nav">
         <div className="brand-group">
-          <div className="brand-logo">⚔️</div>
+          <div className="brand-logo">LT+</div>
           <div className="brand-titles">
             <h1 className="brand-name">LeetCode Torture</h1>
             <span className="brand-tag">ENCHANTED+</span>
@@ -180,15 +180,16 @@ const IndexPopup = () => {
               className="user-nav-chip"
               title={`Linked to LeetCode @${leetcodeUsername}. Tracked solved: ${solvedProblemSlugs?.length || 0}`}
               onClick={() => setDrawerClosed(false)}>
-              <span className="user-icon">👤</span>
-              <span className="user-name">{leetcodeUsername}</span>
+              <span className="user-name">@{leetcodeUsername}</span>
             </div>
           )}
           <button
             className={`icon-button pause-toggle-btn ${disabled ? "is-paused" : ""}`}
             title={disabled ? "Resume Torture Redirects" : "Emergency Pause"}
             onClick={toggleEmergencyPause}>
-            {disabled ? "▶️" : "⏸️"}
+            <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>
+              {disabled ? "RES" : "PAU"}
+            </span>
           </button>
           <button
             className="icon-button settings-btn"
@@ -207,13 +208,13 @@ const IndexPopup = () => {
 
           <div className="streaks-group">
             <div className="streak-badge current-streak-pill" title="Current Solving Streak">
-              <span className="flame-icon">🔥</span>
+              <span className="streak-tag">STREAK</span>
               <span className="streak-num">
                 {hyperTortureMode ? HT_currentStreak ?? 0 : currentStreak ?? 0}
               </span>
             </div>
             <div className="streak-badge best-streak-pill" title="Best Solving Streak">
-              <span className="trophy-icon">🏆</span>
+              <span className="streak-tag">BEST</span>
               <span className="streak-num">
                 {hyperTortureMode ? HT_bestStreak ?? 0 : bestStreak ?? 0}
               </span>
@@ -248,10 +249,9 @@ const IndexPopup = () => {
             {/* Insanely Hard Penalty Banner */}
             {isInsanelyHard && (
               <div className="insanely-hard-banner">
-                <span className="skull-icon">💀</span>
                 <div className="insanely-hard-text">
-                  <strong>INSANELY HARD QUESTION SUMMONED!</strong>
-                  <p>3 rerolls exhausted. No more escape routes—defeat this beast!</p>
+                  <strong>INSANELY HARD QUESTION SUMMONED</strong>
+                  <p>3 rerolls exhausted. No more escape routes - defeat this problem.</p>
                 </div>
               </div>
             )}
@@ -259,9 +259,8 @@ const IndexPopup = () => {
             {/* 2nd reroll warning (1 chance remaining before penalty) */}
             {!isInsanelyHard && chancesRemaining === 1 && (
               <div className="reroll-warning-banner">
-                <span>⚠️</span>
                 <span>
-                  <strong>Warning:</strong> Next reroll is your 3rd chance. It will summon an <em>insanely hard question</em>!
+                  <strong>Warning:</strong> Next reroll is your 3rd chance. It will summon an <em>insanely hard question</em>.
                 </span>
               </div>
             )}
@@ -269,12 +268,12 @@ const IndexPopup = () => {
             <div className={`spotlight-box ${isInsanelyHard ? "insanely-hard-box" : ""}`}>
               <div className="problem-meta-row">
                 <span className={`diff-pill ${diffClass}`}>
-                  {isInsanelyHard ? "💀 NIGHTMARE HARD" : problemDifficulty}
+                  {isInsanelyHard ? "NIGHTMARE HARD" : problemDifficulty}
                 </span>
                 <span className="category-pill">{problemCategory}</span>
                 {chancesRemaining > 0 && !isInsanelyHard && (
                   <span className="chances-pill">
-                    🎲 {chancesRemaining}/3 rerolls
+                    {chancesRemaining}/3 rerolls
                   </span>
                 )}
               </div>
@@ -287,7 +286,7 @@ const IndexPopup = () => {
                   onClick={() => {
                     if (problemURL) chrome.tabs.create({ url: problemURL })
                   }}>
-                  <span>⚔️</span> Solve Trial
+                  Solve Trial
                 </button>
 
                 {chancesRemaining > 0 ? (
@@ -301,7 +300,6 @@ const IndexPopup = () => {
                         : `Reroll problem (${chancesRemaining} chances left)`
                     }
                     onClick={rerollProblem}>
-                    <span>{chancesRemaining === 1 ? "⚠️" : "🎲"}</span>
                     <span>
                       {chancesRemaining === 1
                         ? "Reroll (1/3 left)"
@@ -312,8 +310,8 @@ const IndexPopup = () => {
                   <button
                     className="secondary-action-btn locked-reroll-btn"
                     disabled={true}
-                    title="No rerolls left! 3 rerolls have been used. Solve this problem to unlock freedom.">
-                    <span>🔒</span> 0 Rerolls Left
+                    title="No rerolls left. 3 rerolls have been used. Solve this problem to unlock freedom.">
+                    0 Rerolls Left
                   </button>
                 )}
               </div>
@@ -325,7 +323,7 @@ const IndexPopup = () => {
                   title="Already solved this question before? Mark it solved so it won't appear again, and get a fresh problem."
                   onClick={markCurrentAsAlreadySolvedAndSkip}
                   disabled={isSkipping}>
-                  <span>✓</span> Already solved? Mark & skip
+                  Already solved? Mark and skip
                 </button>
               </div>
             </div>
@@ -335,7 +333,7 @@ const IndexPopup = () => {
         {/* Solved View */}
         {problemName && leetCodeProblemSolved && !hyperTortureMode && (
           <div className="solved-card">
-            <div className="solved-badge">✨</div>
+            <div className="solved-badge">SOLVED</div>
             <h2 className="solved-heading">Freedom Earned!</h2>
             <p className="solved-msg">{solvedMessage}</p>
 
@@ -343,7 +341,7 @@ const IndexPopup = () => {
               <button
                 className="primary-action-btn"
                 onClick={rerollProblem}>
-                <span>🚀</span> Solve Another Problem
+                Solve Another Problem
               </button>
 
               {originalDestinationUrl && (
@@ -352,7 +350,7 @@ const IndexPopup = () => {
                   onClick={() => {
                     chrome.tabs.create({ url: originalDestinationUrl })
                   }}>
-                  <span>🔗</span> Jump to Original Page
+                  Jump to Original Page
                 </button>
               )}
             </div>
@@ -364,7 +362,7 @@ const IndexPopup = () => {
           <button
             className={`footer-pause-btn ${disabled ? "resume-mode" : ""}`}
             onClick={toggleEmergencyPause}>
-            {disabled ? "▶️ Resume Torture (Enforce Redirects)" : "⏸️ Quick Emergency Pause"}
+            {disabled ? "Resume Torture (Enforce Redirects)" : "Quick Emergency Pause"}
           </button>
         </div>
       </div>

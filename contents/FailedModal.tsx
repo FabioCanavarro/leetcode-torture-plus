@@ -44,7 +44,7 @@ const FailedModal = () => {
   return (
     <div className="modal-background fail-modal" onClick={() => setShowModal(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-icon-badge">💀</div>
+        <div className="modal-icon-badge" style={{ fontSize: "0.85rem", fontWeight: 800 }}>FAILED</div>
         <h1>Fatal Mistake!</h1>
         <p className="modal-roast">Hyper Torture streak reset to 0. The grind never forgives.</p>
 

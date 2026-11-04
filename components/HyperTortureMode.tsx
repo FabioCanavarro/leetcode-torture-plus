@@ -43,14 +43,14 @@ const HyperTortureMode: React.FC<HyperTortureModeProps> = ({
 
         <button
           className="solve-btn hyper-btn"
-          onMouseEnter={() => setHoverText("No Escape 💀")}
+          onMouseEnter={() => setHoverText("No Escape")}
           onMouseLeave={() => setHoverText("")}
           onClick={() => {
             if (problemURL) {
               chrome.tabs.create({ url: problemURL })
             }
           }}>
-          {hoverText || "Face the Gauntlet ⚔️"}
+          {hoverText || "Face the Gauntlet"}
         </button>
       </div>
     </div>

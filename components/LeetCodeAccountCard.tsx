@@ -47,7 +47,7 @@ const LeetCodeAccountCard: React.FC = () => {
       const syncResult = await syncUserSolvedProblems(profile.username)
 
       setMessage({
-        text: `Connected to @${profile.username}! Synced ${syncResult.totalCount} solved problems.`,
+        text: `Connected to @${profile.username}. Synced ${syncResult.totalCount} solved problems.`,
         type: "success"
       })
       setInputUsername("")
@@ -92,7 +92,7 @@ const LeetCodeAccountCard: React.FC = () => {
       setMessage({ text: "Syncing solved problems from LeetCode...", type: "info" })
       const res = await syncUserSolvedProblems(leetcodeUsername)
       setMessage({
-        text: `Sync complete! Total tracked solved problems: ${res.totalCount} (+${res.newAdded} new).`,
+        text: `Sync complete. Total tracked solved problems: ${res.totalCount} (+${res.newAdded} new).`,
         type: "success"
       })
     } catch (err: any) {
@@ -120,11 +120,10 @@ const LeetCodeAccountCard: React.FC = () => {
     <div className="lc-account-card">
       <div className="lc-card-header">
         <div className="lc-card-title-group">
-          <span className="lc-icon">⚡</span>
           <div>
-            <h3 className="lc-title">LeetCode Profile & Solved Sync</h3>
+            <h3 className="lc-title">LeetCode Profile and Solved Sync</h3>
             <p className="lc-subtitle">
-              Link your LeetCode account so already solved problems won't be assigned.
+              Link your LeetCode account so already solved problems will not be assigned.
             </p>
           </div>
         </div>
@@ -136,20 +135,20 @@ const LeetCodeAccountCard: React.FC = () => {
             {leetcodeAvatar ? (
               <img src={leetcodeAvatar} alt="Avatar" className="lc-avatar" />
             ) : (
-              <div className="lc-avatar-fallback">👤</div>
+              <div className="lc-avatar-fallback">LC</div>
             )}
             <div className="lc-user-meta">
               <span className="lc-username">@{leetcodeUsername}</span>
               {leetcodeStats && (
                 <div className="lc-stats-breakdown">
                   <span className="stat-pill stat-easy">
-                    🟢 {leetcodeStats.easy ?? 0} Easy
+                    Easy: {leetcodeStats.easy ?? 0}
                   </span>
                   <span className="stat-pill stat-medium">
-                    🟡 {leetcodeStats.medium ?? 0} Med
+                    Med: {leetcodeStats.medium ?? 0}
                   </span>
                   <span className="stat-pill stat-hard">
-                    🔴 {leetcodeStats.hard ?? 0} Hard
+                    Hard: {leetcodeStats.hard ?? 0}
                   </span>
                 </div>
               )}
@@ -158,7 +157,7 @@ const LeetCodeAccountCard: React.FC = () => {
 
           <div className="lc-tracked-row">
             <span className="lc-tracked-label">
-              📚 Tracked Solved Problems: <strong>{solvedProblemSlugs?.length || 0}</strong>
+              Tracked Solved Problems: <strong>{solvedProblemSlugs?.length || 0}</strong>
             </span>
           </div>
 
@@ -167,20 +166,20 @@ const LeetCodeAccountCard: React.FC = () => {
               className="lc-btn lc-btn-sync"
               onClick={handleSyncNow}
               disabled={isLoading}>
-              <span>🔄</span> {isLoading ? "Syncing..." : "Sync Solved"}
+              {isLoading ? "Syncing..." : "Sync Solved"}
             </button>
             <button
               className="lc-btn lc-btn-unlink"
               onClick={handleUnlink}
               disabled={isLoading}>
-              <span>✕</span> Unlink
+              Unlink
             </button>
             <button
               className="lc-btn lc-btn-clear"
               onClick={handleClearHistory}
               title="Reset tracked solved problems list"
               disabled={isLoading}>
-              <span>🗑️</span> Clear History
+              Clear History
             </button>
           </div>
         </div>
@@ -200,7 +199,7 @@ const LeetCodeAccountCard: React.FC = () => {
               className="lc-btn lc-btn-link"
               onClick={() => handleLinkUsername()}
               disabled={isLoading || !inputUsername.trim()}>
-              <span>🔗</span> Link
+              Link
             </button>
           </div>
 
@@ -208,7 +207,7 @@ const LeetCodeAccountCard: React.FC = () => {
             className="lc-btn lc-btn-detect"
             onClick={handleAutoDetect}
             disabled={isLoading}>
-            <span>🔍</span> One-Click Auto-Detect from Browser
+            One-Click Auto-Detect from Browser
           </button>
         </div>
       )}
