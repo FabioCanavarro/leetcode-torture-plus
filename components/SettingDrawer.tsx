@@ -6,8 +6,10 @@ import {
   toggleUrlListener,
   updateStorage
 } from "~background"
+import { storage } from "~storage"
 
 import BackIcon from "./BackIcon"
+import LeetCodeAccountCard from "./LeetCodeAccountCard"
 import SettingLabel from "./SettingLabel"
 
 interface SettingDrawerProps {
@@ -25,7 +27,34 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
   const [hyperTortureMode, setHyperTortureMode] = useStorage<boolean>("hyperTortureMode", false)
   const [_, setHTcurrentStreak] = useStorage<number>("HT_currentStreak", 0)
 
+  // Exclude solved problems setting
+  const [excludeSolvedProblems, setExcludeSolvedProblems] = useStorage<boolean>(
+    "excludeSolvedProblems",
+    true
+  )
+
+  // Reroll tracker in drawer
+  const [rerollsUsed, setRerollsUsed] = useStorage<number>("rerollsUsed", 0)
+
+  const handleResetRerolls = async () => {
+    await setRerollsUsed(0)
+    await storage.setIsInsanelyHard(false)
+  }
+
   const settingList = [
+    {
+      name: "Exclude Solved Problems 🚫",
+      description: "Never assign problems you've already completed on LeetCode",
+      checkboxProps: {
+        checked: excludeSolvedProblems ?? true,
+        handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+          setExcludeSolvedProblems(e.target.checked)
+          if (!leetcodeProblemSolved) {
+            await updateStorage()
+          }
+        }
+      }
+    },
     {
       name: "Emergency Pause ⏸️",
       description: "Temporarily pause redirect rules without losing streaks",
@@ -33,7 +62,6 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
         checked: disabled ?? false,
         handleChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
           setDisabled(e.target.checked)
-          // Handle redirect rule updates
           setTimeout(() => handleRedirectRule(), 50)
         }
       }
@@ -127,7 +155,7 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       }
     },
     {
-      name: 'Hyper Torture Mode ⚡',
+      name: "Hyper Torture Mode ⚡",
       description: "Forces a fresh problem on every new tab opened",
       checkboxProps: {
         checked: hyperTortureMode ?? false,
@@ -154,6 +182,27 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
       </nav>
 
       <div className="drawer-content">
+        {/* LeetCode Profile Linking & Sync */}
+        <LeetCodeAccountCard />
+
+        {/* Reroll Status Card */}
+        <div className="reroll-status-box">
+          <div className="reroll-status-info">
+            <span className="reroll-icon">🎲</span>
+            <div>
+              <p className="reroll-label">Daily Reroll Chances</p>
+              <p className="reroll-desc">
+                {rerollsUsed ?? 0}/3 used ({Math.max(0, 3 - (rerollsUsed ?? 0))} left) • 3rd reroll penalty forces an insanely hard problem!
+              </p>
+            </div>
+          </div>
+          {(rerollsUsed ?? 0) > 0 && (
+            <button className="reset-reroll-btn" onClick={handleResetRerolls}>
+              Reset Chances
+            </button>
+          )}
+        </div>
+
         {leetcodeProblemSolved && !hyperTortureMode && (
           <div className="settings-notice">
             <span>✨</span>

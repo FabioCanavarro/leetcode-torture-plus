@@ -782,3 +782,472 @@ body {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+
+
+/* --------------------------------------------------------------------------
+   LeetCode Account Card & Solved Sync (Settings Drawer)
+   -------------------------------------------------------------------------- */
+.lc-account-card {
+  background: rgba(30, 36, 62, 0.7);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.lc-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lc-card-title-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.lc-icon {
+  font-size: 1.1rem;
+  color: #fbbf24;
+}
+
+.lc-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.lc-subtitle {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  margin-top: 0.15rem;
+}
+
+.lc-user-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(15, 18, 33, 0.6);
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.lc-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #6366f1;
+  object-fit: cover;
+}
+
+.lc-avatar-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.lc-user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.lc-username {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lc-stats-breakdown {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.stat-easy {
+  color: var(--easy-color);
+  background: var(--easy-bg);
+}
+
+.stat-medium {
+  color: var(--med-color);
+  background: var(--med-bg);
+}
+
+.stat-hard {
+  color: var(--hard-color);
+  background: var(--hard-bg);
+}
+
+.lc-tracked-row {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.lc-tracked-label strong {
+  color: #38bdf8;
+}
+
+.lc-button-group {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.lc-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.38rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+.lc-btn-sync {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.lc-btn-sync:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+}
+
+.lc-btn-unlink {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.lc-btn-unlink:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.lc-btn-clear {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border-color: var(--border-subtle);
+}
+
+.lc-btn-clear:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.lc-unlinked-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lc-input-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.lc-input {
+  flex: 1;
+  background: rgba(10, 12, 22, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  color: #fff;
+  font-size: 0.78rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.lc-input:focus {
+  border-color: #6366f1;
+}
+
+.lc-btn-link {
+  background: var(--primary-gradient);
+  color: #fff;
+  border: none;
+}
+
+.lc-btn-link:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.lc-btn-detect {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.lc-btn-detect:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.lc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lc-status-message {
+  font-size: 0.7rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  line-height: 1.35;
+}
+
+.lc-msg-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.lc-msg-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.lc-msg-info {
+  background: rgba(56, 189, 248, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+/* User chip in top nav */
+.user-nav-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 9999px;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.user-nav-chip:hover {
+  background: rgba(99, 102, 241, 0.25);
+  color: #ffffff;
+  border-color: rgba(99, 102, 241, 0.5);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Insanely Hard Trial Banner & 3-Chance Rerolls
+   -------------------------------------------------------------------------- */
+.insanely-hard-banner {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.35) 0%, rgba(153, 27, 27, 0.45) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  animation: pulseInsane 2s infinite ease-in-out;
+}
+
+@keyframes pulseInsane {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.35);
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.65);
+    border-color: rgba(239, 68, 68, 0.9);
+  }
+}
+
+.skull-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 6px #ef4444);
+}
+
+.insanely-hard-text strong {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fecaca;
+  letter-spacing: 0.02em;
+}
+
+.insanely-hard-text p {
+  font-size: 0.68rem;
+  color: #fca5a5;
+  margin-top: 0.15rem;
+  line-height: 1.3;
+}
+
+.insanely-hard-box {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 25px rgba(239, 68, 68, 0.25) !important;
+}
+
+.diff-insane {
+  color: #fff !important;
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  font-weight: 900 !important;
+}
+
+.reroll-warning-banner {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: #fde68a;
+  line-height: 1.35;
+}
+
+.chances-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.danger-reroll-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: #fef08a !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.danger-reroll-btn:hover {
+  background: rgba(245, 158, 11, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.7) !important;
+}
+
+.locked-reroll-btn {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-muted) !important;
+}
+
+.quick-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.2rem;
+}
+
+.quick-skip-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.quick-skip-btn:hover:not(:disabled) {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.quick-skip-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reroll-status-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.reroll-status-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reroll-icon {
+  font-size: 1.1rem;
+}
+
+.reroll-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.reroll-desc {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  margin-top: 0.1rem;
+}
+
+.reset-reroll-btn {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.reset-reroll-btn:hover {
+  background: rgba(99, 102, 241, 0.25);
+  color: #fff;
+}

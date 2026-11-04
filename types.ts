@@ -9,6 +9,7 @@ export type ProblemInfo = {
   url: string
   difficulty?: "Easy" | "Medium" | "Hard" | string
   category?: string
+  isInsanelyHard?: boolean
 }
 
 export type UserState = {
@@ -46,4 +47,27 @@ export type JSONLeetCodeProblem = {
   text: string
   difficulty: "Easy" | "Medium" | "Hard"
   isPremium: boolean
+}
+
+export type LeetCodeStats = {
+  all: number
+  easy: number
+  medium: number
+  hard: number
+}
+
+export type LeetCodeUserProfile = {
+  username: string
+  realName?: string
+  userAvatar?: string
+  ranking?: number
+  reputation?: number
+  solvedStats: LeetCodeStats
+}
+
+export type RecentSubmission = {
+  id: string
+  title: string
+  titleSlug: string
+  timestamp: string
 }

@@ -2,10 +2,11 @@ import { getHyperTortureMode, resetHyperTortureStreak, storage } from "storage"
 
 import {
   getAllLeetCodeProblems,
+  getInsanelyHardLeetCodeProblem,
   getLeetCodeProblemFromProblemSet
 } from "~leetcodeProblems"
 import type { APILeetCodeProblem, ProblemInfo, UserState } from "~types"
-import { isSameLeetCodeProblem } from "~urlUtils"
+import { extractProblemSlug, isSameLeetCodeProblem } from "~urlUtils"
 
 const LEETCODE_URL = "https://leetcode.com"
 const RULE_ID = 1
@@ -141,6 +142,24 @@ export const handleAdditionalProblemRedirect = async (problemUrl: string) => {
   }
 }
 
+export async function generateInsanelyHardProblem(): Promise<ProblemInfo> {
+  try {
+    await storage.initiateLoading()
+    return await getInsanelyHardLeetCodeProblem()
+  } catch (error) {
+    console.error("Error generating insanely hard problem", error)
+    return {
+      url: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+      name: "Median of Two Sorted Arrays",
+      difficulty: "Hard",
+      category: "Binary Search",
+      isInsanelyHard: true
+    }
+  } finally {
+    await storage.stopLoading()
+  }
+}
+
 export async function generateRandomLeetCodeProblem(): Promise<ProblemInfo> {
   try {
     const problemSet = await storage.getProblemSet()
@@ -202,6 +221,17 @@ function onMessageReceived(
         message?.language || "unknown"
       )
       break
+    case "markCurrentProblemSolved":
+      Promise.all([
+        storage.getProblemUrl(),
+        storage.getOriginalDestinationUrl()
+      ]).then(async ([url, orig]) => {
+        const slug = extractProblemSlug(url)
+        if (slug) await storage.addSolvedProblemSlug(slug)
+        await handleSuccessfulSubmission(sender?.tab?.id ?? 0, "Manual")
+        sendResponse({ success: true })
+      })
+      return true
     default:
       break
   }
@@ -250,6 +280,8 @@ export const updateStorage = async () => {
     const isRedirectEnabled = await storage.getEnableRedirectOnEveryProblem()
     const problem = await generateRandomLeetCodeProblem()
     state.leetcodeProblemSolved = false
+    await storage.resetRerolls()
+    await storage.setIsInsanelyHard(false)
     await updateProblemState(problem)
     if (isRedirectEnabled && problem?.url) {
       await setRedirectRule(problem.url)
@@ -265,6 +297,14 @@ async function handleSuccessfulSubmission(tabId: number, lang: string) {
 
   if (isSolved && !hyperTortureMode) return
 
+  const problemUrl = await storage.getProblemUrl()
+  const slug = extractProblemSlug(problemUrl)
+  if (slug) {
+    await storage.addSolvedProblemSlug(slug)
+  }
+
+  await storage.resetRerolls()
+  await storage.setIsInsanelyHard(false)
   await storage.updateStreak()
   state.leetcodeProblemSolved = true
   await storage.updateProblemSolvedState(true)
@@ -351,6 +391,8 @@ async function tryResetStreak() {
   const yesterday = new Date().getDate() - 1
   if (lastCompletion.getDate() < yesterday) {
     await storage.resetStreak()
+    await storage.resetRerolls()
+    await storage.setIsInsanelyHard(false)
     return true
   }
   return false

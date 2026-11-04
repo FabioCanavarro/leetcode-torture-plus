@@ -1,0 +1,105 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v1.0.0)"
+        required: false
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Run Test Suite
+        run: pnpm test
+
+      - name: Build Chrome Extension (MV3)
+        run: |
+          pnpm build
+          pnpm package
+
+      - name: Build Firefox Extension (MV3)
+        run: |
+          pnpm build-firefox
+          pnpm package-firefox
+
+      - name: Determine Release Tag
+        id: vars
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=v1.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: leetcode-torture-bundles
+          path: |
+            build/chrome-mv3-prod.zip
+            build/firefox-mv3-prod.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "LeetCode Torture Plus ${{ steps.vars.outputs.tag }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            build/chrome-mv3-prod.zip
+            build/firefox-mv3-prod.zip
+          body: |
+            ## ⚔️ LeetCode Torture Plus — Release ${{ steps.vars.outputs.tag }}
+
+            ### 🚀 New Features & Enhancements
+            - **LeetCode Profile Linking & Solved Question Tracking**:
+              - Connect your LeetCode username or auto-detect with one click from active browser session.
+              - Automatically query and sync solved problem history.
+              - **"Exclude Already Solved Problems"**: Never assigns problems you've already completed.
+              - Quick "Already Solved? Mark & Skip" action right on the problem card.
+            - **3-Chance Reroll System & Insanely Hard Penalty**:
+              - 3 reroll chances allowed per session/day.
+              - 1st & 2nd rerolls roll a fresh random problem from your curriculum.
+              - Warning alert on the 2nd reroll (1 chance remaining).
+              - **3rd Reroll Penalty**: Summons an **INSANELY HARD** problem (Median of Two Sorted Arrays, Trapping Rain Water, Regular Expression Matching, Alien Dictionary, etc.).
+              - Rerolls lock after 3 chances until solved or next daily trial.
+            - **AlgoMap Roadmap Integration**:
+              - 100% free, 100-problem algorithmic mastery curriculum curated by NeetCode & AlgoMap.
+            - **Emergency Pause ⏸️**:
+              - Pause redirects at any moment without breaking streaks.
+            - **Cross-Browser Support**:
+              - Pre-packaged bundles for both Google Chrome (MV3) and Mozilla Firefox (MV3).

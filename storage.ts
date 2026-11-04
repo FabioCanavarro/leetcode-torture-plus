@@ -48,6 +48,79 @@ export const getOriginalDestinationUrl = async () =>
 export const setOriginalDestinationUrl = async (url: string) =>
   await storage.set("originalDestinationUrl", url)
 
+// --- LeetCode Account & Solved Problem Tracking ---
+export const getLeetCodeUsername = async (): Promise<string> =>
+  (await storage.get("leetcodeUsername")) || ""
+export const setLeetCodeUsername = async (username: string) =>
+  await storage.set("leetcodeUsername", username)
+
+export const getLeetCodeAvatar = async (): Promise<string> =>
+  (await storage.get("leetcodeAvatar")) || ""
+export const setLeetCodeAvatar = async (avatar: string) =>
+  await storage.set("leetcodeAvatar", avatar)
+
+export const getLeetCodeStats = async () =>
+  (await storage.get("leetcodeStats")) || null
+export const setLeetCodeStats = async (stats: any) =>
+  await storage.set("leetcodeStats", stats)
+
+export const getSolvedProblemSlugs = async (): Promise<string[]> => {
+  const slugs = (await storage.get<string[]>("solvedProblemSlugs")) || []
+  return Array.isArray(slugs) ? slugs.map((s) => s.toLowerCase()) : []
+}
+
+export const addSolvedProblemSlug = async (slug: string) => {
+  if (!slug) return
+  const slugs = await getSolvedProblemSlugs()
+  const normalized = slug.toLowerCase()
+  if (!slugs.includes(normalized)) {
+    slugs.push(normalized)
+    await storage.set("solvedProblemSlugs", slugs)
+  }
+}
+
+export const addSolvedProblemSlugs = async (
+  newSlugs: string[]
+): Promise<number> => {
+  const current = await getSolvedProblemSlugs()
+  const set = new Set(current)
+  for (const s of newSlugs) {
+    if (s && typeof s === "string") {
+      set.add(s.toLowerCase().trim())
+    }
+  }
+  const updated = Array.from(set)
+  await storage.set("solvedProblemSlugs", updated)
+  return updated.length
+}
+
+export const clearSolvedProblemSlugs = async () =>
+  await storage.set("solvedProblemSlugs", [])
+
+export const getExcludeSolvedProblems = async (): Promise<boolean> => {
+  const val = await storage.get("excludeSolvedProblems")
+  return val === undefined || val === null ? true : Boolean(val)
+}
+
+export const setExcludeSolvedProblems = async (exclude: boolean) =>
+  await storage.set("excludeSolvedProblems", exclude)
+
+// --- 3-Chance Reroll & Insanely Hard Penalty ---
+export const getRerollsUsed = async (): Promise<number> =>
+  Number(await storage.get("rerollsUsed")) || 0
+
+export const setRerollsUsed = async (count: number) =>
+  await storage.set("rerollsUsed", count)
+
+export const resetRerolls = async () =>
+  await storage.set("rerollsUsed", 0)
+
+export const getIsInsanelyHard = async (): Promise<boolean> =>
+  Boolean(await storage.get("isInsanelyHard"))
+
+export const setIsInsanelyHard = async (isHard: boolean) =>
+  await storage.set("isInsanelyHard", isHard)
+
 export async function updateProblem(
   problem: ProblemInfo,
   isSolved: boolean
@@ -57,6 +130,7 @@ export async function updateProblem(
     storage.set("problemName", problem.name),
     storage.set("problemDifficulty", problem.difficulty ?? "Medium"),
     storage.set("problemCategory", problem.category ?? "General"),
+    storage.set("isInsanelyHard", Boolean(problem.isInsanelyHard)),
     storage.set("problemDate", new Date().toDateString()),
     updateProblemSolvedState(isSolved)
   ])

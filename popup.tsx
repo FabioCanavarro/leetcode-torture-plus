@@ -8,13 +8,18 @@ import { useStorage } from "@plasmohq/storage/hook"
 import HyperTortureMode from "~components/HyperTortureMode"
 import NoPermissions from "~components/NoPermissions"
 import SettingsIcon from "~components/SettingsIcon"
+import { storage } from "~storage"
+import { extractProblemSlug } from "~urlUtils"
 
 import {
+  generateInsanelyHardProblem,
   generateRandomLeetCodeProblem,
   handleAdditionalProblemRedirect,
   handleRedirectRule,
   updateProblemState
 } from "./background"
+
+const MAX_REROLLS = 3
 
 const IndexPopup = () => {
   const unSolvedMessages = [
@@ -45,6 +50,7 @@ const IndexPopup = () => {
   const [solvedMessage, setSolvedMessage] = useState("")
   const [hyperTortureMessage, setHyperTortureMessage] = useState("")
   const [isRerolling, setIsRerolling] = useState(false)
+  const [isSkipping, setIsSkipping] = useState(false)
 
   const [problemName] = useStorage<string>("problemName")
   const [problemURL] = useStorage<string>("problemURL")
@@ -61,18 +67,60 @@ const IndexPopup = () => {
   const [permissionsEnabled] = useStorage<boolean>("permissionsEnabled", true)
   const [drawerClosed, setDrawerClosed] = useState(true)
 
+  // 3-Chance Reroll & Insanely Hard state
+  const [rerollsUsed, setRerollsUsed] = useStorage<number>("rerollsUsed", 0)
+  const [isInsanelyHard, setIsInsanelyHard] = useStorage<boolean>("isInsanelyHard", false)
+
+  // LeetCode account & solved tracking
+  const [leetcodeUsername] = useStorage<string>("leetcodeUsername", "")
+  const [solvedProblemSlugs] = useStorage<string[]>("solvedProblemSlugs", [])
+
   const getRandomInt = (max: number) => Math.floor(Math.random() * max)
 
+  const chancesRemaining = Math.max(0, MAX_REROLLS - (rerollsUsed ?? 0))
+
   const rerollProblem = async () => {
+    if (chancesRemaining <= 0 || isRerolling) return
+
     try {
       setIsRerolling(true)
+      const nextUsed = (rerollsUsed ?? 0) + 1
+      await setRerollsUsed(nextUsed)
+
+      // On the 3rd reroll (when nextUsed reaches 3), unleash the insanely hard problem!
+      const isThirdChance = nextUsed >= MAX_REROLLS
+      const problem = isThirdChance
+        ? await generateInsanelyHardProblem()
+        : await generateRandomLeetCodeProblem()
+
+      if (problem) {
+        if (isThirdChance) {
+          setIsInsanelyHard(true)
+        }
+        await updateProblemState(problem)
+        await handleAdditionalProblemRedirect(problem.url)
+      }
+    } finally {
+      setTimeout(() => setIsRerolling(false), 350)
+    }
+  }
+
+  // Quick skip for already solved problems
+  const markCurrentAsAlreadySolvedAndSkip = async () => {
+    if (!problemURL || isSkipping) return
+    try {
+      setIsSkipping(true)
+      const slug = extractProblemSlug(problemURL)
+      if (slug) {
+        await storage.addSolvedProblemSlug(slug)
+      }
       const problem = await generateRandomLeetCodeProblem()
       if (problem) {
         await updateProblemState(problem)
         await handleAdditionalProblemRedirect(problem.url)
       }
     } finally {
-      setTimeout(() => setIsRerolling(false), 300)
+      setTimeout(() => setIsSkipping(false), 300)
     }
   }
 
@@ -92,12 +140,13 @@ const IndexPopup = () => {
     return <NoPermissions permissionsEnabled={permissionsEnabled} />
   }
 
-  const diffClass =
-    problemDifficulty?.toLowerCase() === "easy"
-      ? "diff-easy"
-      : problemDifficulty?.toLowerCase() === "hard"
-      ? "diff-hard"
-      : "diff-medium"
+  const diffClass = isInsanelyHard
+    ? "diff-hard diff-insane"
+    : problemDifficulty?.toLowerCase() === "easy"
+    ? "diff-easy"
+    : problemDifficulty?.toLowerCase() === "hard"
+    ? "diff-hard"
+    : "diff-medium"
 
   // Status pill logic
   let statusText = "ACTIVE TORTURE 🔒"
@@ -121,11 +170,20 @@ const IndexPopup = () => {
           <div className="brand-logo">⚔️</div>
           <div className="brand-titles">
             <h1 className="brand-name">LeetCode Torture</h1>
-            <span className="brand-tag">ENCHANTED</span>
+            <span className="brand-tag">ENCHANTED+</span>
           </div>
         </div>
 
         <div className="nav-actions">
+          {leetcodeUsername && (
+            <div
+              className="user-nav-chip"
+              title={`Linked to LeetCode @${leetcodeUsername}. Tracked solved: ${solvedProblemSlugs?.length || 0}`}
+              onClick={() => setDrawerClosed(false)}>
+              <span className="user-icon">👤</span>
+              <span className="user-name">{leetcodeUsername}</span>
+            </div>
+          )}
           <button
             className={`icon-button pause-toggle-btn ${disabled ? "is-paused" : ""}`}
             title={disabled ? "Resume Torture Redirects" : "Emergency Pause"}
@@ -134,7 +192,7 @@ const IndexPopup = () => {
           </button>
           <button
             className="icon-button settings-btn"
-            title="Settings & Problem Sets"
+            title="Settings, LeetCode Sync & Problem Sets"
             onClick={() => setDrawerClosed(false)}>
             <SettingsIcon />
           </button>
@@ -187,10 +245,38 @@ const IndexPopup = () => {
           <div className="problem-card">
             <p className="roast-subtitle">{unsolvedMessage}</p>
 
-            <div className="spotlight-box">
+            {/* Insanely Hard Penalty Banner */}
+            {isInsanelyHard && (
+              <div className="insanely-hard-banner">
+                <span className="skull-icon">💀</span>
+                <div className="insanely-hard-text">
+                  <strong>INSANELY HARD QUESTION SUMMONED!</strong>
+                  <p>3 rerolls exhausted. No more escape routes—defeat this beast!</p>
+                </div>
+              </div>
+            )}
+
+            {/* 2nd reroll warning (1 chance remaining before penalty) */}
+            {!isInsanelyHard && chancesRemaining === 1 && (
+              <div className="reroll-warning-banner">
+                <span>⚠️</span>
+                <span>
+                  <strong>Warning:</strong> Next reroll is your 3rd chance. It will summon an <em>insanely hard question</em>!
+                </span>
+              </div>
+            )}
+
+            <div className={`spotlight-box ${isInsanelyHard ? "insanely-hard-box" : ""}`}>
               <div className="problem-meta-row">
-                <span className={`diff-pill ${diffClass}`}>{problemDifficulty}</span>
+                <span className={`diff-pill ${diffClass}`}>
+                  {isInsanelyHard ? "💀 NIGHTMARE HARD" : problemDifficulty}
+                </span>
                 <span className="category-pill">{problemCategory}</span>
+                {chancesRemaining > 0 && !isInsanelyHard && (
+                  <span className="chances-pill">
+                    🎲 {chancesRemaining}/3 rerolls
+                  </span>
+                )}
               </div>
 
               <h2 className="problem-headline">{problemName}</h2>
@@ -203,11 +289,43 @@ const IndexPopup = () => {
                   }}>
                   <span>⚔️</span> Solve Trial
                 </button>
+
+                {chancesRemaining > 0 ? (
+                  <button
+                    className={`secondary-action-btn ${
+                      chancesRemaining === 1 ? "danger-reroll-btn" : ""
+                    } ${isRerolling ? "spinning" : ""}`}
+                    title={
+                      chancesRemaining === 1
+                        ? "DANGER: 3rd and final reroll will trigger an insanely hard question!"
+                        : `Reroll problem (${chancesRemaining} chances left)`
+                    }
+                    onClick={rerollProblem}>
+                    <span>{chancesRemaining === 1 ? "⚠️" : "🎲"}</span>
+                    <span>
+                      {chancesRemaining === 1
+                        ? "Reroll (1/3 left)"
+                        : `Reroll (${chancesRemaining}/3)`}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    className="secondary-action-btn locked-reroll-btn"
+                    disabled={true}
+                    title="No rerolls left! 3 rerolls have been used. Solve this problem to unlock freedom.">
+                    <span>🔒</span> 0 Rerolls Left
+                  </button>
+                )}
+              </div>
+
+              {/* Already Solved Quick-Skip */}
+              <div className="quick-actions-row">
                 <button
-                  className={`secondary-action-btn ${isRerolling ? "spinning" : ""}`}
-                  title="Roll a different problem from your set"
-                  onClick={rerollProblem}>
-                  <span>🎲</span> Reroll
+                  className="quick-skip-btn"
+                  title="Already solved this question before? Mark it solved so it won't appear again, and get a fresh problem."
+                  onClick={markCurrentAsAlreadySolvedAndSkip}
+                  disabled={isSkipping}>
+                  <span>✓</span> Already solved? Mark & skip
                 </button>
               </div>
             </div>
@@ -215,7 +333,7 @@ const IndexPopup = () => {
         )}
 
         {/* Solved View */}
-        {problemName && leetcodeProblemSolved && !hyperTortureMode && (
+        {problemName && leetCodeProblemSolved && !hyperTortureMode && (
           <div className="solved-card">
             <div className="solved-badge">✨</div>
             <h2 className="solved-heading">Freedom Earned!</h2>
