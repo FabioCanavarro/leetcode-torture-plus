@@ -9,6 +9,7 @@ import {
 import { storage } from "~storage"
 
 import BackIcon from "./BackIcon"
+import GithubIcon from "./GithubIcon"
 import LeetCodeAccountCard from "./LeetCodeAccountCard"
 import SettingLabel from "./SettingLabel"
 
@@ -219,7 +220,13 @@ const SettingDrawer: React.FC<SettingDrawerProps> = ({ close, setClose }) => {
         </ul>
 
         <div className="drawer-footer">
-          <p className="version-tag">LeetCode Torture v1.0.0 - Enhanced Edition</p>
+          <button
+            className="drawer-github-link"
+            onClick={() => chrome.tabs.create({ url: "https://github.com/FabioCanavarro/leetcode-torture-plus" })}>
+            <GithubIcon size={14} />
+            <span>GitHub / FabioCanavarro</span>
+          </button>
+          <p className="version-tag">LeetCode Torture v1.0.1 - Enhanced Edition</p>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import HyperTortureMode from "~components/HyperTortureMode"
+import GithubIcon from "~components/GithubIcon"
 import NoPermissions from "~components/NoPermissions"
 import SettingsIcon from "~components/SettingsIcon"
 import { storage } from "~storage"
@@ -170,7 +171,7 @@ const IndexPopup = () => {
           <div className="brand-logo">LT+</div>
           <div className="brand-titles">
             <h1 className="brand-name">LeetCode Torture</h1>
-            <span className="brand-tag">ENCHANTED+</span>
+            <span className="brand-tag">v1.0.1</span>
           </div>
         </div>
 
@@ -183,6 +184,12 @@ const IndexPopup = () => {
               <span className="user-name">@{leetcodeUsername}</span>
             </div>
           )}
+          <button
+            className="icon-button github-btn"
+            title="GitHub Repository"
+            onClick={() => chrome.tabs.create({ url: "https://github.com/FabioCanavarro/leetcode-torture-plus" })}>
+            <GithubIcon size={16} />
+          </button>
           <button
             className={`icon-button pause-toggle-btn ${disabled ? "is-paused" : ""}`}
             title={disabled ? "Resume Torture Redirects" : "Emergency Pause"}
@@ -331,7 +338,7 @@ const IndexPopup = () => {
         )}
 
         {/* Solved View */}
-        {problemName && leetCodeProblemSolved && !hyperTortureMode && (
+        {problemName && leetcodeProblemSolved && !hyperTortureMode && (
           <div className="solved-card">
             <div className="solved-badge">SOLVED</div>
             <h2 className="solved-heading">Freedom Earned!</h2>

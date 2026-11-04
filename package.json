@@ -1,7 +1,7 @@
 {
   "name": "leetcode-torture-plus",
   "displayName": "LeetCode Torture Plus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An enchanted extension that forces you to solve LeetCode problems before accessing distracting websites. Features resilient submission detection, AlgoMap roadmap, category filters, emergency pause, and streak tracking.",
   "author": "FabioCanavarro",
   "scripts": {
@@ -11,6 +11,8 @@
     "dev-firefox": "plasmo dev --target=firefox-mv3",
     "build-firefox": "plasmo build --target=firefox-mv3",
     "package-firefox": "plasmo package --target=firefox-mv3",
+    "typecheck": "tsc --noEmit",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint .",
     "test": "jest tests/03_urlUtils.test.js tests/04_algomapRoadmapProblems.test.js tests/05_insanelyHardProblems.test.js --globalSetup= --globalTeardown= --testEnvironment=node",
     "test:all": "plasmo test",
     "web-scrape-tests": "jest --runInBand"
@@ -39,17 +41,6 @@
     "jest-puppeteer": "^10.0.1",
     "prettier": "3.2.5",
     "typescript": "5.4.4"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@swc/core",
-      "esbuild",
-      "lmdb",
-      "msgpackr-extract",
-      "puppeteer",
-      "sharp"
-    ]
   },
   "manifest": {
     "browser_specific_settings": {

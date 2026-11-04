@@ -189,7 +189,7 @@ const LeetCodeAccountCard: React.FC = () => {
             <input
               type="text"
               className="lc-input"
-              placeholder="e.g. FabioCanavarro or lee215"
+              placeholder="e.g. tourist or lee215"
               value={inputUsername}
               onChange={(e) => setInputUsername(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLinkUsername()}
